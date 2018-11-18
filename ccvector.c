@@ -169,26 +169,88 @@ int VecRemoveByIndex(CC_VECTOR *Vector, int Index)
 
 int VecGetValueByIndex(CC_VECTOR *Vector, int Index, int *Value)
 {
-    CC_UNREFERENCED_PARAMETER(Vector);
-    CC_UNREFERENCED_PARAMETER(Index);
-    CC_UNREFERENCED_PARAMETER(Value);
-    return -1;
+	if (Vector == NULL || Vector->elements == NULL)
+	{
+		return-1;
+	}
+	if (Index < 0)
+	{
+		return -1;
+	}
+
+	int currentSize = Vector->actualSize;
+	if (currentSize <= Index)
+	{
+		return -1;
+	}
+
+	int *arr = Vector->elements;
+	*Value = arr[Index];
+    return 0;
 }
 
 int VecGetCount(CC_VECTOR *Vector)
 {
-    CC_UNREFERENCED_PARAMETER(Vector);
-    return -1;
+	if (Vector == NULL || Vector->elements == NULL)
+	{
+		return -1;
+	}
+	
+	int currentSize = Vector->actualSize;
+	return currentSize;
 }
 
 int VecClear(CC_VECTOR *Vector)
 {
-    CC_UNREFERENCED_PARAMETER(Vector);
-    return -1;
+	if (Vector == NULL || Vector->elements == NULL)
+	{
+		return -1;
+	}
+	free(Vector->elements);
+	Vector->elements = malloc(sizeof(int) * VEC_DEFAULT_SIZE);
+    return 0;
 }
 
 int VecSort(CC_VECTOR *Vector)
 {
-    CC_UNREFERENCED_PARAMETER(Vector);
-    return -1;
+	if (Vector == NULL || Vector->elements == NULL)
+	{
+		return -1;
+	}
+	int currentSize = Vector->actualSize;
+	int arr[] = Vector->elements;
+	if (currentSize > 1)
+	{
+		quickSort(arr, 0, currentSize);
+	}
+	return 0;
+}
+
+
+void quickSort(int arr[], int low, int high)
+{
+	if (low < high)
+	{
+
+		int pi = partition(arr, low, high);
+		quickSort(arr, low, pi - 1);
+		quickSort(arr, pi + 1, high);
+	}
+}
+
+int partition(int arr[], int low, int high)
+{
+	int pivot = arr[high];    // pivot 
+	int i = (low - 1);  
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		if (arr[j] <= pivot)
+		{
+			i++;    
+			SwapFunction(&arr[i], &arr[j]);
+		}
+	}
+	SwapFunction(&arr[i + 1], &arr[high]);
+	return (i + 1);
 }
