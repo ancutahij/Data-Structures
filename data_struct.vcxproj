@@ -159,6 +159,7 @@
     <ClCompile Include="ccstack.c" />
     <ClCompile Include="cctree.c" />
     <ClCompile Include="ccvector.c" />
+    <ClCompile Include="common.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -208,9 +208,15 @@ int VecClear(CC_VECTOR *Vector)
 	}
 	free(Vector->elements);
 	Vector->elements = malloc(sizeof(int) * VEC_DEFAULT_SIZE);
+	Vector->actualSize = 0;
+	Vector->memorySize = VEC_DEFAULT_SIZE;
     return 0;
 }
 
+
+/*
+	The function makes use of quick sort method in order to sort the list of elements
+*/
 int VecSort(CC_VECTOR *Vector)
 {
 	if (Vector == NULL || Vector->elements == NULL)
@@ -218,7 +224,7 @@ int VecSort(CC_VECTOR *Vector)
 		return -1;
 	}
 	int currentSize = Vector->actualSize;
-	int arr[] = Vector->elements;
+	int *arr= Vector->elements;
 	if (currentSize > 1)
 	{
 		quickSort(arr, 0, currentSize);
@@ -227,30 +233,3 @@ int VecSort(CC_VECTOR *Vector)
 }
 
 
-void quickSort(int arr[], int low, int high)
-{
-	if (low < high)
-	{
-
-		int pi = partition(arr, low, high);
-		quickSort(arr, low, pi - 1);
-		quickSort(arr, pi + 1, high);
-	}
-}
-
-int partition(int arr[], int low, int high)
-{
-	int pivot = arr[high];    // pivot 
-	int i = (low - 1);  
-
-	for (int j = low; j <= high - 1; j++)
-	{
-		if (arr[j] <= pivot)
-		{
-			i++;    
-			SwapFunction(&arr[i], &arr[j]);
-		}
-	}
-	SwapFunction(&arr[i + 1], &arr[high]);
-	return (i + 1);
-}
