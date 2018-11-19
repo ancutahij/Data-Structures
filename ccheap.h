@@ -16,7 +16,7 @@ int HpDestroy(CC_HEAP **Heap);
 
 int HpInsert(CC_HEAP *Heap, int Value); 
 
-// HpRemove should remove all elements with the value Value in the heap
+/* HpRemove should remove all elements with the value Value in the heap*/
 int HpRemove(CC_HEAP *Heap, int Value); 
 
 // HpGetExtreme should return the maximum/minumum value in the heap, depending on the 
