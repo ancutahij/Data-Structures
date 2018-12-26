@@ -1,8 +1,19 @@
 #pragma once
 
+typedef struct _CC_NODE_TREE {
+	int Value;
+	struct _CC_NODE_TREE *leftChild;
+	struct _CC_NODE_TREE *rightChild;
+	struct _CC_NODE_TREE *parent;
+
+	//int height;
+	int duplicationFactor ;
+
+	//int height;
+}CC_TREE_NODE;
+
 typedef struct _CC_TREE {
-    // Members
-    int PlaceHolder; // placeholder to be removed when actual implementation is added
+	CC_TREE_NODE *root;
 } CC_TREE;
 
 int TreeCreate(CC_TREE **Tree);
@@ -28,3 +39,4 @@ int TreeClear(CC_TREE *Tree);
 int TreeGetNthPreorder(CC_TREE *Tree, int Index, int *Value);
 int TreeGetNthInorder(CC_TREE *Tree, int Index, int *Value);
 int TreeGetNthPostorder(CC_TREE *Tree, int Index, int *Value);
+void TreeWeightTraversal(CC_TREE *tree);

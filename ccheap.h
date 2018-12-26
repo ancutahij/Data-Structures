@@ -3,10 +3,21 @@
 #include "ccvector.h"
 
 typedef struct _CC_HEAP{ 
-    // Members
-    int PlaceHolder; // placeholder to be removed when actual implementation is added
+	int(*CompareFunction)(int, int);
+	int ActualSize;
+	int MemorySize;
+	int *Elements;
 } CC_HEAP; 
   
+
+static int HpCompareMinHeap(int, int );
+static int HpCompareMaxHeap(int , int );
+static int HpResizeHeap(CC_HEAP*, int);
+static int HPGetParent(int);
+static int HPGetLeftChild(int);
+static int HPGetRightChild(int);
+static int  HpRemovePeek(CC_HEAP *, int *);
+
 // HpCreateMaxHeap and HpCreateMinHeap should create a max heap or a min heap, 
 // respectively. InitialElements is an optional parameter and, if it is not null, the constructed
 // heap should initially contain all the elements in the provided vector.

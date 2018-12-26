@@ -5,11 +5,11 @@
 
 int StCreate(CC_STACK **Stack)
 {
-	if (*Stack != NULL)
+	if (*Stack != NULL || Stack==NULL)
 	{
 		return -1;
 	}
-	*Stack = malloc(sizeof(CC_STACK));
+	*Stack = (CC_STACK *)malloc(sizeof(CC_STACK));
 	if (*Stack == NULL)
 	{
 		return -1;
@@ -20,41 +20,31 @@ int StCreate(CC_STACK **Stack)
 
 int StDestroy(CC_STACK **Stack)
 {
-	if (Stack == NULL)
+	if (Stack == NULL|| *Stack == NULL)
 	{
 		return -1;
 	}
 
-	if (*Stack == NULL)
-	{
-		return -1;
-	}
 
-	if ((*Stack)->peek != NULL)
+	while (StIsEmpty(*Stack) == 0)
 	{
-		StDestroyRecursively(&(*Stack)->peek);
+		int tempValue;
+		StPop(*Stack, &tempValue);
 	}
 	free(*Stack);
     return 0;
 }
 
-void StDestroyRecursively(CC_STACK_NODE** NodeStart) {
-	if ((*NodeStart)->next != NULL)
-	{
-		StDestroyRecursively(&(*NodeStart)->next);
-	}
-	free(*NodeStart);
-	*NodeStart = NULL;
-}
 
-int StPush(CC_STACK *Stack, int Value)
+
+int StPush(CC_STACK* Stack, int Value)
 {
 	if (Stack == NULL)
 	{
 		return -1;
 	}
-	CC_STACK_NODE *newNode = malloc(sizeof(CC_STACK_NODE));
-	if (newNode == NULL) // cannot allocate memory for creating a new node
+	CC_STACK_NODE *newNode =(CC_STACK_NODE *) malloc(sizeof(CC_STACK_NODE));
+	if (newNode == NULL) // cannot allocate new memory for creating a node
 	{
 		return -1;
 	}
@@ -66,13 +56,13 @@ int StPush(CC_STACK *Stack, int Value)
 
 int StPop(CC_STACK *Stack, int *Value)
 {
-	if (Stack == NULL)
+	if (Stack == NULL || Value == NULL)
 	{
 		return -1;
 	}
-	if (Stack->peek == NULL) // The stack doesn't contain any node.
+	if (StIsEmpty(Stack) == 1) // The stack doesn't contain any node.
 	{
-		return -1;
+		return 0;
 	}
 	*Value = Stack->peek->info;
 	CC_STACK_NODE* temp = Stack->peek;
@@ -83,13 +73,13 @@ int StPop(CC_STACK *Stack, int *Value)
 
 int StPeek(CC_STACK *Stack, int *Value)
 {
-	if (Stack == NULL)
+	if (Stack == NULL || Value== NULL)
 	{
 		return -1;
 	}
-	if (Stack->peek == NULL) // The stack doesn't contain any node.
+	if (StIsEmpty(Stack) == 1 ) // The stack doesn't contain any node.
 	{
-		return -1;
+		return 0;
 	}
 	*Value = Stack->peek->info;
     return 0;
@@ -130,56 +120,65 @@ int StClear(CC_STACK *Stack)
 	{
 		return -1;
 	}
-	StDestroyRecursively(&(Stack->peek));
+	
+	while (StIsEmpty(Stack) == 0)
+	{
+		int tempValue;
+		StPop(Stack, &tempValue);
+	}
     return 0;
 }
 
+static int StPopPushStack(CC_STACK *PopStack, CC_STACK *PushStack)
+{
+	// it's not necessary to check validaty of parameters bc this is a static function which is used only in this module
+	while (StIsEmpty(PopStack) == 0)
+	{
+		int poppedValue;
+		int retValue = 0; // check if StPop and StPush functions doesn't crash
+		retValue = StPop(PopStack, &poppedValue);
+		if (retValue != 0)
+		{
+			return -1;
+		}
+		retValue = StPush(PushStack, poppedValue);
+		if (retValue != 0)
+		{
+			return -1;
+		}
+
+	}
+	return 0;
+}
 int StPushStack(CC_STACK *Stack, CC_STACK *StackToPush)
 {
 	if (Stack == NULL && StackToPush == NULL)
 	{
 		return -1;
 	}
-	if (StackToPush->peek == NULL) // there are no elements into StacktoPush Stack, so Stack stack is equal to initial Stack stack
+	// in case that the StackToPush is empty, the final result will be the initial Stack because there are no elements to be added
+	if (StIsEmpty(StackToPush) == 1)
 	{
 		return 0;
 	}
-	
-	// create a new stack that will contain the elements of StacktoPush in a reverse order
+	// create a new stack that will contain the elements of Stack stack in a reverse order
 	CC_STACK* tempStack = NULL;
 	StCreate(&tempStack);
-	while (StackToPush->peek != NULL)
-	{
-		int poppedValue;
-		int retValue=0; // check if StPop and StPush functions doesn't crash
-		retValue = StPop(StackToPush, &poppedValue);
-		if (retValue != 0)
-		{
-			return -1;
-		}
-		retValue = StPush(tempStack, poppedValue);
-		if (retValue != 0)
-		{
-			return -1;
-		}
+	StPopPushStack(Stack, tempStack);
 
-	}
+	// create a new stack that will contain the elements of StaclToPush stack in a reverse order
+	CC_STACK* tempStack2 = NULL;
+	StCreate(&tempStack2);
+	StPopPushStack(StackToPush, tempStack2);
 
-	// pop all values from tempStack and push them into Stack
-	while (tempStack->peek != NULL)
-	{
-		int poppedValue;
-		int retValue = 0; // check if StPop and StPush functions doesn't crash
-		retValue =StPop(tempStack, &poppedValue);
-		if (retValue != 0)
-		{
-			return -1;
-		}
-		retValue =StPush(Stack, poppedValue);
-		if (retValue != 0)
-		{
-			return -1;
-		}
-	}
+
+	//push elements back to Stack
+	StPopPushStack(tempStack2, Stack);
+	StPopPushStack(tempStack, Stack);
+
+	// destroy auxiliary stacks
+	StDestroy(&tempStack);
+	StDestroy(&tempStack2);
+
     return 0;
 }

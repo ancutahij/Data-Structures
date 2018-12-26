@@ -1,23 +1,23 @@
 #include<stdio.h>
 #include<malloc.h>
 #include "ccvector.h"
+#include"ccheap.h"
 #include "common.h"
 
 #define VEC_DEFAULT_SIZE 4
 int VecCreate(CC_VECTOR **Vector)
 {
-	// Vector parameter has already an address memory.
-    if (*Vector != NULL)
+
+	if (Vector == NULL)
 	{
 		return -1;
 	}
 
 	*Vector = malloc(sizeof(CC_VECTOR));
-	if (Vector == NULL) 
+	if (*Vector == NULL)
 	{
 		return -1;
 	}
-
 	(*Vector)->memorySize = VEC_DEFAULT_SIZE;
 	(*Vector)->actualSize = 0;
 	(*Vector)->elements = malloc(sizeof(int) * VEC_DEFAULT_SIZE);
@@ -208,6 +208,10 @@ int VecClear(CC_VECTOR *Vector)
 	}
 	free(Vector->elements);
 	Vector->elements = malloc(sizeof(int) * VEC_DEFAULT_SIZE);
+	if (Vector->elements == NULL)
+	{
+		return -1;
+	}
 	Vector->actualSize = 0;
 	Vector->memorySize = VEC_DEFAULT_SIZE;
     return 0;
@@ -224,11 +228,17 @@ int VecSort(CC_VECTOR *Vector)
 		return -1;
 	}
 	int currentSize = Vector->actualSize;
-	int *arr= Vector->elements;
+	//int *arr= Vector->elements;
 	if (currentSize > 1)
 	{
-		quickSort(arr, 0, currentSize);
+		//quickSort(arr, 0, currentSize);  
+		CC_HEAP *heap = NULL;
+		HpCreateMinHeap(&heap, NULL);
+		HpSortToVector(heap, Vector);
+		HpDestroy(&heap);
+
 	}
+
 	return 0;
 }
 
